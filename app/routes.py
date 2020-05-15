@@ -3,6 +3,9 @@ from app.models import Post, User
 from app.form import RegistrationForm, LoginForm, UpdateAccountForm
 from app import app, db, bcrypt
 from flask_login import login_user, current_user, logout_user, login_required
+import secrets
+import os
+from PIL import Image
 
 posts = [
     {
@@ -69,11 +72,31 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+def save_picture(form_picture):
+    # let's convert the file name to a random name so that
+    # two images with same name won't override
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename) # because we don't need file name
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+
+    # let's resize our picture
+    output_size = (125,125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+
+    # let's save the resized image
+    i.save(picture_path)
+    return picture_fn # return the picture filename so that we can save it to database
+
 @app.route('/account', methods=["GET", "POST"])
 @login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
