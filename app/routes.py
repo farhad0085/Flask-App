@@ -6,11 +6,13 @@ from flask_login import login_user, current_user, logout_user, login_required
 import secrets
 import os
 from PIL import Image
+from datetime import datetime
 
 @app.route("/")
 @app.route("/home")
 def home():
-    posts = Post.query.all()
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template("home.html", posts=posts, title="Home")
 
 
@@ -117,6 +119,7 @@ def update_post(post_id):
     if form.validate_on_submit():
         post.title = form.title.data
         post.content = form.content.data
+        post.date_posted = datetime.utcnow()
         db.session.commit()
         flash("Post Updated successfully!", 'success')
         return redirect(url_for('post',post_id=post.id))
