@@ -7,30 +7,10 @@ import secrets
 import os
 from PIL import Image
 
-posts = [
-    {
-        "title": "First Blog Post",
-        "author": "Jane Foster",
-        "date_posted": "13 May, 2020",
-        "content": "This is first blog post in this blog."
-    },
-    {
-        "title": "Second Blog Post",
-        "author": "Thor",
-        "date_posted": "13 May, 2020",
-        "content": "This is Second blog post in this blog"
-    },
-    {
-        "title": "Third Blog Post",
-        "author": "Captain America",
-        "date_posted": "13 May, 2020",
-        "content": "This is Third blog post in this blog"
-    }
-]
-
 @app.route("/")
 @app.route("/home")
 def home():
+    posts = Post.query.all()
     return render_template("home.html", posts=posts, title="Home")
 
 
