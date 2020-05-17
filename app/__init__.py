@@ -5,7 +5,6 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from app.config import Config
 
-
 mail = Mail()
 
 db = SQLAlchemy()
