@@ -21,7 +21,13 @@ mail = Mail(app)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 
-from app import routes
+from app.users.routes import users
+from app.main.routes import main
+from app.posts.routes import posts
+
+app.register_blueprint(users)
+app.register_blueprint(main)
+app.register_blueprint(posts)
